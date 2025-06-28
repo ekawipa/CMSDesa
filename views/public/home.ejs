@@ -1,0 +1,157 @@
+<% layout('../layout') -%>
+
+<!-- Hero Section -->
+<div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+    <div class="container mx-auto px-4 py-16">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">Welcome to <%= village.name %></h1>
+            <p class="text-xl md:text-2xl mb-8 opacity-90">Your Digital Village Portal</p>
+            <div class="flex justify-center space-x-4">
+                <a href="/news" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200">
+                    Latest News
+                </a>
+                <a href="/articles" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors duration-200">
+                    Read Articles
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<nav class="bg-white shadow-md sticky top-0 z-40">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center space-x-8">
+                <a href="/" class="text-xl font-semibold text-gray-800"><%= village.name %></a>
+                <div class="hidden md:flex space-x-6">
+                    <a href="/" class="text-gray-600 hover:text-blue-600 transition-colors duration-200">Home</a>
+                    <a href="/news" class="text-gray-600 hover:text-blue-600 transition-colors duration-200">News</a>
+                    <a href="/articles" class="text-gray-600 hover:text-blue-600 transition-colors duration-200">Articles</a>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <a href="/admin" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                    Admin Panel
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Latest News Section -->
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Latest News</h2>
+            <p class="text-gray-600">Stay updated with the latest happenings in our village</p>
+        </div>
+        
+        <% if (news.length > 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% news.slice(0, 3).forEach(newsItem => { %>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                                <a href="/news/<%= newsItem.id %>" class="hover:text-blue-600 transition-colors duration-200">
+                                    <%= newsItem.title %>
+                                </a>
+                            </h3>
+                            <% if (newsItem.excerpt) { %>
+                                <p class="text-gray-600 mb-4"><%= newsItem.excerpt %></p>
+                            <% } %>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">
+                                    <%= new Date(newsItem.created_at).toLocaleDateString() %>
+                                </span>
+                                <a href="/news/<%= newsItem.id %>" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    Read More →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <div class="text-center mt-8">
+                <a href="/news" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                    View All News
+                </a>
+            </div>
+        <% } else { %>
+            <div class="text-center py-12">
+                <i class="fas fa-newspaper text-4xl text-gray-400 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-500 mb-2">No news available</h3>
+                <p class="text-gray-400">Check back later for updates</p>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Featured Articles Section -->
+<section class="py-12">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Featured Articles</h2>
+            <p class="text-gray-600">Discover insightful articles about our community</p>
+        </div>
+        
+        <% if (articles.length > 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% articles.forEach(article => { %>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                                <a href="/articles/<%= article.id %>" class="hover:text-blue-600 transition-colors duration-200">
+                                    <%= article.title %>
+                                </a>
+                            </h3>
+                            <% if (article.excerpt) { %>
+                                <p class="text-gray-600 mb-4"><%= article.excerpt %></p>
+                            <% } %>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">
+                                    <%= new Date(article.created_at).toLocaleDateString() %>
+                                </span>
+                                <a href="/articles/<%= article.id %>" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    Read More →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+            
+            <div class="text-center mt-8">
+                <a href="/articles" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                    View All Articles
+                </a>
+            </div>
+        <% } else { %>
+            <div class="text-center py-12">
+                <i class="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-500 mb-2">No articles available</h3>
+                <p class="text-gray-400">Check back later for new content</p>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="text-center">
+            <h3 class="text-xl font-semibold mb-4"><%= village.name %></h3>
+            <p class="text-gray-400 mb-4">Your trusted village information portal</p>
+            <div class="text-sm text-gray-500">
+                © <%= new Date().getFullYear() %> <%= village.name %>. All rights reserved.
+            </div>
+        </div>
+    </div>
+</footer>
+
+<% if (error) { %>
+    <script>
+        showNotification('<%= error %>', 'error');
+    </script>
+<% } %>

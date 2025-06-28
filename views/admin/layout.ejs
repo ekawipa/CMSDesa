@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar-active {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        .content-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <div class="p-6 border-b">
+                <div class="flex items-center">
+                    <i class="fas fa-city text-2xl text-blue-600 mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-800">Village CMS</h1>
+                </div>
+            </div>
+            
+            <nav class="mt-6">
+                <div class="px-6 py-2">
+                    <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Admin Panel</h2>
+                </div>
+                
+                <a href="/admin" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                
+                <a href="/admin/articles" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <i class="fas fa-newspaper mr-3"></i>
+                    Articles
+                </a>
+                
+                <a href="/admin/news" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <i class="fas fa-bullhorn mr-3"></i>
+                    News
+                </a>
+                
+                <a href="/admin/pages" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <i class="fas fa-file-alt mr-3"></i>
+                    Pages
+                </a>
+                
+                <a href="/admin/menu" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <i class="fas fa-bars mr-3"></i>
+                    Menu
+                </a>
+                
+                <a href="/admin/settings" class="flex items-center px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+                
+                <div class="mt-6 pt-6 border-t">
+                    <a href="/" target="_blank" class="flex items-center px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                        <i class="fas fa-external-link-alt mr-3"></i>
+                        View Site
+                    </a>
+                    
+                    <form action="/auth/logout" method="POST" class="inline-block w-full">
+                        <button type="submit" class="flex items-center w-full px-6 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
+                            <i class="fas fa-sign-out-alt mr-3"></i>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white shadow-sm border-b">
+                <div class="px-6 py-4 flex items-center justify-between">
+                    <h1 class="text-2xl font-semibold text-gray-800"><%= title.replace(' - Village CMS', '') %></h1>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600">Welcome, <%= user.userEmail %></span>
+                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6 content-fade-in">
+                <%- body %>
+            </main>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.2/cdn.min.js" defer></script>
+    <script>
+        // Simple notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} transform transition-all duration-300 translate-x-full`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Active sidebar link
+        const currentPath = window.location.pathname;
+        const sidebarLinks = document.querySelectorAll('nav a');
+        sidebarLinks.forEach(link => {
+            if (link.href.includes(currentPath) && currentPath !== '/admin') {
+                link.classList.add('sidebar-active', 'text-white');
+                link.classList.remove('text-gray-700');
+            }
+        });
+    </script>
+</body>
+</html>
