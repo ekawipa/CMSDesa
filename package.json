@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "build": "echo 'No dedicated build process for this Node.js application. Use \"npm start\" to run the server.'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
