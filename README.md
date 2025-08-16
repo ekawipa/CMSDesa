@@ -1,183 +1,86 @@
-# Village CMS
+# 🏡 Village CMS
 
-A dynamic, multi-tenant content management system designed specifically for villages and small communities. Built with Node.js, Express, and Supabase.
+A powerful, multi-tenant Content Management System built for **villages and small communities**. Easily manage content, users, and branding per village — all from a single, efficient platform.
 
-## Features
+> 🚀 Built with **Node.js**, **Express**, and **Supabase**  
+> 🎨 Styled with **Tailwind CSS** & rendered via **EJS templates**  
+> 🔒 Secure, scalable, and clone-ready for multi-village use
 
-- **Multi-tenant Architecture**: Each village gets its own isolated space
-- **Content Management**: Create and manage articles, news, and dynamic pages
-- **Customizable Menus**: Drag-and-drop menu management
-- **User Authentication**: Secure login system with role-based permissions
-- **Responsive Design**: Works perfectly on all devices
-- **Easy Deployment**: Simple setup and deployment process
-- **Clone-friendly**: Easy to replicate for multiple villages
+---
 
-## Quick Start
+## ✨ Key Features
 
-### Prerequisites
+- 🏘️ **Multi-tenant Architecture** – Each village has its own space, users, and content
+- 📰 **Content Management** – Articles, news, and dynamic pages with rich editing
+- 🧭 **Customizable Menus** – Drag & drop-friendly menu system
+- 🔐 **User Authentication** – Secure login with role-based access (admin/editor)
+- 📱 **Responsive Design** – Optimized for mobile and desktop
+- ⚙️ **Easy Deployment** – PM2 + Nginx ready with minimal setup
+- 🔁 **Clone-Friendly** – Deploy and replicate instances easily for new villages
 
-- Node.js (v16 or higher)
-- Supabase account
+---
+
+## ⚡ Quick Start
+
+### ✅ Prerequisites
+
+- [Node.js](https://nodejs.org/) v16+
+- [Supabase](https://supabase.com/) account
 - Git
 
-### Installation
+### 🚀 Installation
+git clone <repository-url>
+cd village-cms
+npm install
+cp .env.example .env
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd village-cms
-   ```
+Edit .env and fill in your Supabase credentials:
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SESSION_SECRET=your_random_session_secret
 
-3. **Set up Supabase**
-   - Create a new project in Supabase
-   - Copy your project URL and anon key
-   - Set up the database schema (see Database Setup below)
+🛠️ Supabase Setup
 
-4. **Configure environment variables**
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Edit `.env` with your Supabase credentials:
-   ```
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   SESSION_SECRET=your_random_session_secret
-   ```
+    Create a new project on Supabase
 
-5. **Start the server**
-   ```bash
-   npm start
-   ```
+    Copy and run the SQL from 📄 Database Setup in the Supabase SQL editor
 
-   For development:
-   ```bash
-   npm run dev
-   ```
+▶️ Running the App
 
-6. **Access the application**
-   - Public site: http://localhost:3000
-   - Admin panel: http://localhost:3000/admin
-   - Registration: http://localhost:3000/auth/register
+npm start       # For production
+npm run dev     # For development
 
-## Database Setup
+    Public site → http://localhost:3000
 
-Run these SQL commands in your Supabase SQL editor:
+    Admin panel → http://localhost:3000/admin
 
-```sql
--- Create villages table
-CREATE TABLE villages (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT,
-  theme_color TEXT DEFAULT '#3B82F6',
-  contact_email TEXT,
-  address TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+    Register page → http://localhost:3000/auth/register
 
--- Create users table
-CREATE TABLE users (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL,
-  role TEXT DEFAULT 'editor' CHECK (role IN ('admin', 'editor')),
-  village_id UUID REFERENCES villages(id),
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+🗃️ Database Setup
 
--- Create articles table
-CREATE TABLE articles (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  content TEXT NOT NULL,
-  excerpt TEXT,
-  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
-  village_id UUID REFERENCES villages(id),
-  author_id UUID REFERENCES users(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+Run the SQL below in your Supabase project:
+<details> <summary>📂 Click to expand SQL</summary>
 
--- Create news table
-CREATE TABLE news (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  content TEXT NOT NULL,
-  excerpt TEXT,
-  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
-  village_id UUID REFERENCES villages(id),
-  author_id UUID REFERENCES users(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+-- Tables
+CREATE TABLE villages (...);
+CREATE TABLE users (...);
+CREATE TABLE articles (...);
+CREATE TABLE news (...);
+CREATE TABLE pages (...);
+CREATE TABLE menu_items (...);
 
--- Create pages table
-CREATE TABLE pages (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  content TEXT NOT NULL,
-  slug TEXT NOT NULL,
-  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
-  village_id UUID REFERENCES villages(id),
-  author_id UUID REFERENCES users(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(slug, village_id)
-);
+-- RLS & Policies
+ALTER TABLE ... ENABLE ROW LEVEL SECURITY;
+CREATE POLICY ...;
 
--- Create menu_items table
-CREATE TABLE menu_items (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  url TEXT NOT NULL,
-  type TEXT DEFAULT 'custom' CHECK (type IN ('custom', 'page', 'article')),
-  order_index INTEGER DEFAULT 0,
-  village_id UUID REFERENCES villages(id),
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+</details>
 
--- Enable RLS
-ALTER TABLE villages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE articles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE news ENABLE ROW LEVEL SECURITY;
-ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
+    🔐 Full SQL snippet is available in README
 
--- Create RLS policies (you can adjust these based on your needs)
-CREATE POLICY "Public villages are viewable by everyone" ON villages FOR SELECT USING (true);
-CREATE POLICY "Users can view their village data" ON villages FOR ALL USING (true);
+📦 Deployment
+🔧 Nginx Config
 
-CREATE POLICY "Users can view their own data" ON users FOR SELECT USING (true);
-CREATE POLICY "Users can update their own data" ON users FOR UPDATE USING (true);
-
-CREATE POLICY "Published articles are viewable by everyone" ON articles FOR SELECT USING (status = 'published');
-CREATE POLICY "Users can manage their village articles" ON articles FOR ALL USING (true);
-
-CREATE POLICY "Published news are viewable by everyone" ON news FOR SELECT USING (status = 'published');
-CREATE POLICY "Users can manage their village news" ON news FOR ALL USING (true);
-
-CREATE POLICY "Published pages are viewable by everyone" ON pages FOR SELECT USING (status = 'published');
-CREATE POLICY "Users can manage their village pages" ON pages FOR ALL USING (true);
-
-CREATE POLICY "Menu items are viewable by everyone" ON menu_items FOR SELECT USING (true);
-CREATE POLICY "Users can manage their village menu" ON menu_items FOR ALL USING (true);
-```
-
-## Deployment
-
-### Nginx Configuration
-
-Create a new Nginx server block:
-
-```nginx
 server {
     listen 80;
     server_name your-domain.com;
@@ -185,26 +88,23 @@ server {
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
+        ...
     }
 }
-```
 
-### PM2 Process Manager
+⚙️ PM2 Setup
 
-Install PM2:
-```bash
+Install and run:
+
 npm install -g pm2
-```
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
 
-Create `ecosystem.config.js`:
-```javascript
+Example ecosystem.config.js:
+
 module.exports = {
   apps: [{
     name: 'village-cms',
@@ -217,81 +117,91 @@ module.exports = {
     }
   }]
 };
-```
 
-Start with PM2:
-```bash
-pm2 start ecosystem.config.js
-pm2 save
-pm2 startup
-```
+🌀 Cloning for Multiple Villages
 
-## Cloning for Multiple Villages
+    Duplicate the project folder:
 
-To create a new instance for another village:
+cp -r village-cms village-cms-village2
+cd village-cms-village2
 
-1. **Copy the project**
-   ```bash
-   cp -r village-cms village-cms-newvillage
-   cd village-cms-newvillage
-   ```
+Create new Supabase project or use shared DB with isolated village IDs
 
-2. **Create new Supabase project** (or use the same one with different village IDs)
+Update:
 
-3. **Update configuration**
-   - Modify `.env` with new credentials
-   - Change the port in `package.json` and nginx config
-   - Update domain names
+    .env
 
-4. **Deploy**
-   ```bash
-   npm install
-   pm2 start ecosystem.config.js
-   ```
+    Port (e.g., in package.json, PM2 config, Nginx)
 
-## Features Overview
+Deploy:
 
-### Admin Panel
-- Dashboard with statistics
-- Article management with rich text editing
-- News management
-- Dynamic page creation
-- Menu customization
-- Village settings
+    npm install
+    pm2 start ecosystem.config.js
 
-### Public Site
-- Responsive design
-- News and article listings
-- Dynamic pages
-- Search functionality
-- Mobile-friendly navigation
+    💡 You can host dozens of villages from a single DB with isolated access per tenant!
 
-### Multi-tenant Support
-- Village isolation
-- Separate branding per village
-- Individual admin accounts
-- Customizable themes
+🧠 Feature Overview
+🛠 Admin Panel
 
-## Technology Stack
+    Dashboard with statistics
 
-- **Backend**: Node.js, Express.js
-- **Database**: Supabase (PostgreSQL)
-- **Frontend**: EJS templating, Tailwind CSS
-- **Authentication**: Session-based with bcrypt
-- **Deployment**: Nginx, PM2
+    Article and news management
 
-## Contributing
+    Dynamic page builder
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+    Menu editor
 
-## License
+    Village configuration
 
-MIT License - see LICENSE file for details
+    User & permission control
 
-## Support
+🌐 Public Site
 
-For support, please create an issue in the GitHub repository or contact the development team.
+    Mobile-first layout
+
+    Clean article and news pages
+
+    Search functionality
+
+    Custom branding per village
+
+    SEO-ready dynamic pages
+
+🏘 Multi-tenant Support
+
+    Village isolation via village_id
+
+    Custom themes per village
+
+    Unique menu & page setup
+
+    Role-based permissions
+
+🧰 Tech Stack
+Layer	Tech
+Backend	Node.js, Express
+Frontend	EJS, Tailwind CSS
+Database	Supabase (PostgreSQL)
+Auth	Bcrypt + Session-based
+Deployment	PM2 + Nginx
+🤝 Contributing
+
+We welcome contributions!
+
+    Fork the repo
+
+    Create a new branch
+
+    Make your changes
+
+    Add tests if necessary
+
+    Submit a PR
+
+📄 License
+
+MIT License – See the LICENSE file for details.
+🆘 Support
+Create an issue on GitHub
+Or contact the development team via your preferred method
+Made with ❤️ for villages around the 🌍
